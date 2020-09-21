@@ -10,4 +10,6 @@ Create a rectangle polygon around the center of the circle with custom radius an
 
 Allows Dragging of the Marker and redraw the polygon on Movement.
 
-Live Demo : https://jsfiddle.net/haneefputtur/vkr1qspe/1/
+Live Fiddle : https://jsfiddle.net/haneefputtur/vkr1qspe/1/
+
+Live Demo : https://haneefputtur.github.io/leafletrotate.html
