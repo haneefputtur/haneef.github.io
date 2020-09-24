@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reverse Geocoding</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    /* Don't forget to replace your API key at ReplaceKeyHere */
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=ReplaceKeyHere&callback=initMap&libraries=&v=weekly"
+      defer
+    ></script>
+    <style type="text/css">
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+
+      /* Optional: Makes the sample page fill the window. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: "Roboto", "sans-serif";
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #floating-panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        width: 350px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+
+      #latlng {
+        width: 225px;
+      }
+    </style>
+    <script>
+      "use strict";
+
+      function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 8,
+          center: {
+            lat: 40.731,
+            lng: -73.997,
+          },
+        });
+        const geocoder = new google.maps.Geocoder();
+        const infowindow = new google.maps.InfoWindow();
+        document.getElementById("submit").addEventListener("click", () => {
+          geocodeLatLng(geocoder, map, infowindow);
+        });
+      }
+
+      function geocodeLatLng(geocoder, map, infowindow) {
+        const input = document.getElementById("latlng").value;
+        const latlngStr = input.split(",", 2);
+        const latlng = {
+          lat: parseFloat(latlngStr[0]),
+          lng: parseFloat(latlngStr[1]),
+        };
+        geocoder.geocode(
+          {
+            location: latlng,
+          },
+          (results, status) => {
+            if (status === "OK") {
+		//	console.log(add);
+			
+			if (results[1]) {
+            var country = null, countryCode = null, city = null, cityAlt = null;
+            var c, lc, component;
+            for (var r = 0, rl = results.length; r < rl; r += 1) {
+                var result = results[r];
+
+                if (!city && result.types[0] === 'locality') {
+                    for (c = 0, lc = result.address_components.length; c < lc; c += 1) {
+                        component = result.address_components[c];
+
+                        if (component.types[0] === 'locality') {
+                            city = component.long_name;
+                            break;
+                        }
+                    }
+                }
+                else if (!city && !cityAlt && result.types[0] === 'administrative_area_level_1') {
+                    for (c = 0, lc = result.address_components.length; c < lc; c += 1) {
+                        component = result.address_components[c];
+
+                        if (component.types[0] === 'administrative_area_level_1') {
+                            cityAlt = component.long_name;
+                            break;
+                        }
+                    }
+                } else if (!country && result.types[0] === 'country') {
+                    country = result.address_components[0].long_name;
+                    countryCode = result.address_components[0].short_name;
+                }
+
+                if (city && country) {
+                    break;
+                }
+            }
+			if (city==null)
+			{
+			city = cityAlt;
+			}
+          //   console.log("City: " + city + ", City2: " + cityAlt + ", Country: " + country + ", Country Code: " + countryCode);
+			 
+			 var m = "City: " + city + ", Country: " + country;
+			 
+            console.log("City: " + city + ", Country: " + country);
+			map.setZoom(11);
+                const marker = new google.maps.Marker({
+                  position: latlng,
+                  map: map,
+                });
+                infowindow.setContent(m);
+                infowindow.open(map, marker);
+ 
+        }
+	
+		
+             
+            } else {
+              window.alert("Geocoder failed due to: " + status);
+            }
+          }
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <div id="floating-panel">
+      <input id="latlng" type="text" value="24,54" />
+      <input id="submit" type="button" value="Reverse Geocode" />
+    </div>
+    <div id="map"></div>
+  </body>
+</html>
